@@ -1,0 +1,8 @@
+[package]
+name = "rustic_pizza_rocket"
+version = "0.1.0"
+authors = ["Ivar Abrahamsen <ivar@flurdy.com>"]
+
+[dependencies]
+rocket = "0.2.4"
+rocket_codegen = "0.2.4"
