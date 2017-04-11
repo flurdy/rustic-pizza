@@ -6,3 +6,11 @@ authors = ["Ivar Abrahamsen <ivar@flurdy.com>"]
 [dependencies]
 rocket = "0.2.4"
 rocket_codegen = "0.2.4"
+
+[dependencies.rocket_contrib]
+version = "*"
+default-features = false
+features = ["handlebars_templates"]
+
+[dev-dependencies]
+rocket = { version = "0.2.4", features = ["testing"] }
