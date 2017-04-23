@@ -6,6 +6,7 @@ authors = ["Ivar Abrahamsen <ivar@flurdy.com>"]
 [dependencies]
 rocket = "0.2.4"
 rocket_codegen = "0.2.4"
+uuid = { version = "0.4", features = ["serde", "v4"] }
 
 [dependencies.rocket_contrib]
 version = "*"
