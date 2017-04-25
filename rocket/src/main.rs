@@ -21,6 +21,22 @@ fn show_menu() -> Template {
    Template::render("pizza_menu", &context)
 }
 
+#[get("/pizza/order/<order_id>")]
+fn show_pizza_ordered(order_id: String) -> Result<Template, Failure> {
+   // let order_uuid = Uuid::parse_str(order_id.as_str());
+   match Uuid::parse_str(order_id.as_str()) {
+      Ok(order_id) => {
+         let mut context = HashMap::new();
+         context.insert("order_id", order_id);
+         Ok(Template::render("pizza_ordered", &context))
+      },
+      Err(..)  => {
+         println!("Pizza order id not valid: {}", &order_id);
+         Err(Failure(Status::NotFound))
+      },
+   }
+}
+
 #[derive(FromForm)]
 struct PizzaOrder {
     name: String,
@@ -42,7 +58,7 @@ fn order_pizza(pizza_order_form: Form<PizzaOrder>) -> Result<Redirect, Failure> 
 }
 
 fn main() {
-   rocket::ignite().mount("/", routes![show_menu,order_pizza]).launch();
+   rocket::ignite().mount("/", routes![show_menu,order_pizza,show_pizza_ordered]).launch();
 }
 
 #[cfg(test)]
@@ -54,7 +70,7 @@ mod tests {
 
    #[test]
    fn pizza_menu_test() {
-      let rocket = rocket::ignite().mount("/", routes![super::show_menu,super::order_pizza]);
+      let rocket = rocket::ignite().mount("/", routes![super::show_menu,super::order_pizza,super::show_pizza_ordered]);
       let mut req = MockRequest::new(Method::Get, "/pizza");
       let mut response = req.dispatch_with(&rocket);
       assert_eq!(response.status(), Status::Ok);
@@ -66,7 +82,7 @@ mod tests {
 
    #[test]
    fn pizza_order_test() {
-      let rocket = rocket::ignite().mount("/", routes![super::show_menu,super::order_pizza]);
+      let rocket = rocket::ignite().mount("/", routes![super::show_menu,super::order_pizza,super::show_pizza_ordered]);
       let mut req = MockRequest::new(Method::Post, "/pizza/order")
                         .header(ContentType::Form)
                         .body(&format!("name={}", "pePPeroni"));
@@ -84,7 +100,7 @@ mod tests {
 
    #[test]
    fn pizza_order_test_wrong_name() {
-      let rocket = rocket::ignite().mount("/", routes![super::show_menu,super::order_pizza]);
+      let rocket = rocket::ignite().mount("/", routes![super::show_menu,super::order_pizza,super::show_pizza_ordered]);
       let mut req = MockRequest::new(Method::Post, "/pizza/order")
                         .header(ContentType::Form)
                         .body(&format!("name={}", "peppppeerrroni"));
@@ -92,5 +108,22 @@ mod tests {
       assert_eq!(response.status(), Status::NotFound);
 
       assert!(response.headers().find(|h| h.name() == "Location").is_none());
+   }
+
+   #[test]
+   fn show_pizza_ordered_test() {
+      let rocket = rocket::ignite().mount("/", routes![super::show_menu,super::order_pizza,super::show_pizza_ordered]);
+      let order_id = Uuid::new_v4().to_string();
+      let mut req = MockRequest::new(Method::Get, format!("/pizza/order/{}", order_id));
+      let response = req.dispatch_with(&rocket);
+      assert_eq!(response.status(), Status::Ok);
+   }
+
+   #[test]
+   fn show_pizza_ordered_test_invalid_id() {
+      let rocket = rocket::ignite().mount("/", routes![super::show_menu,super::order_pizza,super::show_pizza_ordered]);
+      let mut req = MockRequest::new(Method::Get, "/pizza/order/123");
+      let response = req.dispatch_with(&rocket);
+      assert_eq!(response.status(), Status::NotFound);
    }
 }
