@@ -31,7 +31,7 @@ fn order_pizza(pizza_order_form: Form<PizzaOrder>) -> Result<Redirect, Failure> 
     let pizza_order = pizza_order_form.get();
     let pizza_name = &pizza_order.name;
     let pizzas: Vec<String> = vec!["Margherita", "Pepperoni", "Hawaii"].iter().map(|p| p.to_string().to_lowercase()).collect();
-    if pizzas.contains(pizza_name){
+    if pizzas.contains(&pizza_name.to_lowercase()){
         println!("Pizza ordered: {}", &pizza_name);
         let order_id = Uuid::new_v4();
         Ok(Redirect::to(format!("/pizza/order/{}",order_id).as_str()))
@@ -69,7 +69,7 @@ mod tests {
       let rocket = rocket::ignite().mount("/", routes![super::show_menu,super::order_pizza]);
       let mut req = MockRequest::new(Method::Post, "/pizza/order")
                         .header(ContentType::Form)
-                        .body(&format!("name={}", "pepperoni"));
+                        .body(&format!("name={}", "pePPeroni"));
       let response = req.dispatch_with(&rocket);
       assert_eq!(response.status(), Status::SeeOther);
 

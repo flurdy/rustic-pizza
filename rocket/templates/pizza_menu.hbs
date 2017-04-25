@@ -8,7 +8,13 @@
     <h1>Rustic Pizza</h1>
     <ul>
       {{#each pizzas}}
-        <li>{{this}}</li>
+        <li>
+           <form action="/pizza/order" method="post">
+             <input type="hidden" name="name" value="{{this}}"/>
+             {{this}}
+             <button type="submit">order</button>
+           </form>
+        </li>
       {{/each}}
     </ul>
   </body>
