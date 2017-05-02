@@ -16,11 +16,13 @@ use rocket::http::Status;
 use rocket::request::Form;
 use uuid::Uuid;
 
+
+static PIZZAS: &'static [&'static str] = &["Margherita", "Pepperoni", "Hawaii"];
+
 #[get("/pizza")]
 fn show_menu() -> Template {
    let mut context = HashMap::new();
-   let pizzas = vec!["Margherita", "Pepperoni", "Hawaii"];
-   context.insert("pizzas",pizzas);
+   context.insert("pizzas",PIZZAS);
    Template::render("pizza_menu", &context)
 }
 
@@ -58,7 +60,7 @@ type PizzaOrderDatabase = Mutex<HashMap<Uuid, String>>;
 fn order_pizza(pizza_order_form: Form<PizzaOrder>, database: State<PizzaOrderDatabase>) -> Result<Redirect, Failure> {
    let pizza_order = pizza_order_form.get();
    let pizza_name = &pizza_order.name;
-   let pizzas: Vec<String> = vec!["Margherita", "Pepperoni", "Hawaii"].iter().map(|p| p.to_string().to_lowercase()).collect();
+   let pizzas: Vec<String> = PIZZAS.iter().map(|p| p.to_string().to_lowercase()).collect();
    if pizzas.contains(&pizza_name.to_lowercase()){
       println!("Pizza ordered: {}", &pizza_name);
       let order_id = Uuid::new_v4();
