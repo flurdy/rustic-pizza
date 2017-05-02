@@ -8,7 +8,7 @@ written in Rust, with each webapp using different web frameworks.
 * https://doc.rust-lang.org/book/README.html
 * https://doc.rust-lang.org/std/
 * http://rustbyexample.com/index.html
-* https://aturon.github.io/stability-dashboard/
+* https://aturon.github.io/
 
 * http://www.arewewebyet.org
 * https://github.com/flosse/rust-web-framework-comparison
